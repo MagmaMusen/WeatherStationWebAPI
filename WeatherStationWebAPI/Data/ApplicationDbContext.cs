@@ -12,6 +12,22 @@ namespace WeatherStationWebAPI.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
         public DbSet<WeatherObservation> Observations { get; set; }
+        public DbSet<Place> Places { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            /* Write Fluent API configurations here */
+
+            //Place
+            modelBuilder.Entity<Place>().HasKey(p => p.Name);
+
+            // WeatherObservation
+            modelBuilder.Entity<WeatherObservation>()
+                .HasOne(w => w.Place)
+                .WithOne()
+                .HasForeignKey<WeatherObservation>();
+
+        }
     }
 
 }
