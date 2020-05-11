@@ -22,10 +22,25 @@ namespace WeatherStationWebAPI.Controllers
         }
 
         // GET: api/WeatherObservations
+        // Gets last 3 observations
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WeatherObservation>>> GetObservations()
         {
-            return await _context.Observations.ToListAsync();
+            return await _context.Observations.OrderByDescending(o => o.Date).Take(3).ToListAsync();
+        }
+
+        // GET: api/WeatherObservations/{date}
+        [HttpGet("{date}")]
+        public async Task<ActionResult<IEnumerable<WeatherObservation>>> GetObservations(DateTime date)
+        {
+            return await _context.Observations.Where(o => o.Date == date).OrderByDescending(o => o.Date).ToListAsync();
+        }
+
+        // GET: api/WeatherObservations/{date}
+        [HttpGet("{startTime}/{endTime}")]
+        public async Task<ActionResult<IEnumerable<WeatherObservation>>> GetObservations(DateTime startTime, DateTime endTime)
+        {
+            return await _context.Observations.Where(o => o.Date >= startTime && o.Date <= endTime).OrderByDescending(o => o.Date).ToListAsync();
         }
 
         // GET: api/WeatherObservations/5
