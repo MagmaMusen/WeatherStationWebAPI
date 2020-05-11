@@ -20,6 +20,7 @@ namespace WeatherStationWebAPI.Data
 
             //Place
             modelBuilder.Entity<Place>().HasKey(p => p.Id);
+            modelBuilder.Entity<Place>().HasIndex(i => new{i.Latitude, i.Longitude}).IsUnique();
 
             // WeatherObservation
             modelBuilder.Entity<WeatherObservation>().HasKey(p => p.Id);
