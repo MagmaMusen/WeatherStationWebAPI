@@ -24,23 +24,32 @@ namespace WeatherStationWebAPI.Controllers
         // GET: api/WeatherObservations
         // Gets last 3 observations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WeatherObservation>>> GetObservations()
+        public async Task<ActionResult<IEnumerable<DtoWeatherObservation>>> GetObservations()
         {
-            return await _context.Observations.OrderByDescending(o => o.Date).Take(3).ToListAsync();
+            var weatherObservations = await _context.Observations.OrderByDescending(o => o.Date).Take(3).ToListAsync();
+
+            return ConvertToDtoWeatherObservations(weatherObservations);
+
         }
 
         // GET: api/WeatherObservations/{date}
         [HttpGet("{date}")]
-        public async Task<ActionResult<IEnumerable<WeatherObservation>>> GetObservations(DateTime date)
+        public async Task<ActionResult<IEnumerable<DtoWeatherObservation>>> GetObservations(DateTime date)
         {
-            return await _context.Observations.Where(o => o.Date == date).OrderByDescending(o => o.Date).ToListAsync();
+            var weatherObservations = await _context.Observations.Where(o => o.Date == date)
+                .OrderByDescending(o => o.Date).ToListAsync();
+
+            return ConvertToDtoWeatherObservations(weatherObservations);
         }
 
         // GET: api/WeatherObservations/{date}
         [HttpGet("{startTime}/{endTime}")]
-        public async Task<ActionResult<IEnumerable<WeatherObservation>>> GetObservations(DateTime startTime, DateTime endTime)
+        public async Task<ActionResult<IEnumerable<DtoWeatherObservation>>> GetObservations(DateTime startTime, DateTime endTime)
         {
-            return await _context.Observations.Where(o => o.Date >= startTime && o.Date <= endTime).OrderByDescending(o => o.Date).ToListAsync();
+            var weatherObservations = await _context.Observations.Where(o => o.Date >= startTime && o.Date <= endTime)
+                .OrderByDescending(o => o.Date).ToListAsync();
+
+            return ConvertToDtoWeatherObservations(weatherObservations);
         }
 
         // GET: api/WeatherObservations/5
@@ -93,8 +102,30 @@ namespace WeatherStationWebAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<WeatherObservation>> PostWeatherObservation(WeatherObservation weatherObservation)
+        public async Task<ActionResult<WeatherObservation>> PostWeatherObservation(DtoWeatherObservation dtoWeatherObservation)
         {
+            var place = _context.Places.FirstOrDefault(p =>
+                p.Latitude == dtoWeatherObservation.Latitude && p.Longitude == dtoWeatherObservation.Longitude);
+
+            if (place == null)
+            {
+                place = _context.Places.Add(new Place()
+                {
+                    Name = dtoWeatherObservation.Name,
+                    Latitude = dtoWeatherObservation.Latitude,
+                    Longitude = dtoWeatherObservation.Longitude
+                }).Entity;
+            }
+
+            var weatherObservation = new WeatherObservation()
+            {
+                Date = dtoWeatherObservation.Date,
+                Humidity = dtoWeatherObservation.Humidity,
+                Temperature = dtoWeatherObservation.Temperature,
+                Pressure = dtoWeatherObservation.Pressure,
+                PlaceId = place.Id
+            };
+
             _context.Observations.Add(weatherObservation);
             await _context.SaveChangesAsync();
 
@@ -120,6 +151,20 @@ namespace WeatherStationWebAPI.Controllers
         private bool WeatherObservationExists(long id)
         {
             return _context.Observations.Any(e => e.Id == id);
+        }
+
+        private List<DtoWeatherObservation> ConvertToDtoWeatherObservations(List<WeatherObservation> weatherObservations)
+        {
+            List<DtoWeatherObservation> dtoWeatherObservations = new List<DtoWeatherObservation>();
+
+            foreach (var weatherObservation in weatherObservations)
+            {
+                var place = _context.Places.Find(weatherObservation.PlaceId);
+
+                dtoWeatherObservations.Add(new DtoWeatherObservation(weatherObservation, place));
+            }
+
+            return dtoWeatherObservations;
         }
     }
 }
