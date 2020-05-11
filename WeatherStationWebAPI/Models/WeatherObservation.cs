@@ -9,7 +9,7 @@ namespace WeatherStationWebAPI.Models
 
     public class WeatherObservation
     {
-        public long ID { get; set; }
+        public long Id { get; set; }
         public DateTime Date { get; set; }
         public float Temperature { get; set; }
         public  int Humidity { get; set; }

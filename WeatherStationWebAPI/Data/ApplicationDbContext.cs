@@ -19,13 +19,14 @@ namespace WeatherStationWebAPI.Data
             /* Write Fluent API configurations here */
 
             //Place
-            modelBuilder.Entity<Place>().HasKey(p => p.Name);
+            modelBuilder.Entity<Place>().HasKey(p => p.Id);
 
             // WeatherObservation
+            modelBuilder.Entity<WeatherObservation>().HasKey(p => p.Id);
             modelBuilder.Entity<WeatherObservation>()
-                .HasOne(w => w.Place)
-                .WithOne()
-                .HasForeignKey<WeatherObservation>();
+                .HasOne<Place>()
+                .WithMany()
+                .HasForeignKey(f => f.PlaceId);
 
         }
     }
