@@ -63,7 +63,7 @@ namespace WeatherStationWebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutWeatherObservation(long id, WeatherObservation weatherObservation)
         {
-            if (id != weatherObservation.ID)
+            if (id != weatherObservation.Id)
             {
                 return BadRequest();
             }
@@ -98,7 +98,7 @@ namespace WeatherStationWebAPI.Controllers
             _context.Observations.Add(weatherObservation);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetWeatherObservation", new { id = weatherObservation.ID }, weatherObservation);
+            return CreatedAtAction("GetWeatherObservation", new { id = weatherObservation.Id }, weatherObservation);
         }
 
         // DELETE: api/WeatherObservations/5
@@ -119,7 +119,7 @@ namespace WeatherStationWebAPI.Controllers
 
         private bool WeatherObservationExists(long id)
         {
-            return _context.Observations.Any(e => e.ID == id);
+            return _context.Observations.Any(e => e.Id == id);
         }
     }
 }

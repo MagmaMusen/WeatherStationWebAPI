@@ -16,7 +16,7 @@ namespace WeatherStationWebAPI.Models
         public float Pressure { get; set; }
 
         //Navigational property to Place
-        public string PlaceId { get; set; }
+        public int PlaceId { get; set; }
         public Place Place { get; set; }
 
     }
