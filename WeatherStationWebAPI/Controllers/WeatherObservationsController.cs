@@ -21,6 +21,17 @@ namespace WeatherStationWebAPI.Controllers
             _context = context;
         }
 
+
+        /************** SLET MIG JEG ER KUN TIL TEST HVOR JEG SEEDER DATABASEN ******/
+        [HttpGet("seed")]
+        public async Task<ActionResult<IEnumerable<DtoWeatherObservation>>> Seed()
+        {
+            TestSeeder.seedMe(_context);
+
+            return StatusCode(200);
+        }
+        /*****************************************************************************/
+
         // GET: api/WeatherObservations
         // Gets last 3 observations
         [HttpGet]
@@ -32,15 +43,18 @@ namespace WeatherStationWebAPI.Controllers
 
         }
 
+        
         // GET: api/WeatherObservations/{date}
+        //[HttpGet("{date}")]
         [HttpGet("{date}")]
         public async Task<ActionResult<IEnumerable<DtoWeatherObservation>>> GetObservations(DateTime date)
         {
-            var weatherObservations = await _context.Observations.Where(o => o.Date == date)
+            var weatherObservations = await _context.Observations.Where(o => o.Date.Date == date)
                 .OrderByDescending(o => o.Date).ToListAsync();
 
             return ConvertToDtoWeatherObservations(weatherObservations);
         }
+        
 
         // GET: api/WeatherObservations/{date}
         [HttpGet("{startTime}/{endTime}")]
@@ -52,8 +66,9 @@ namespace WeatherStationWebAPI.Controllers
             return ConvertToDtoWeatherObservations(weatherObservations);
         }
 
+        
         // GET: api/WeatherObservations/5
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public async Task<ActionResult<WeatherObservation>> GetWeatherObservation(long id)
         {
             var weatherObservation = await _context.Observations.FindAsync(id);
@@ -65,11 +80,12 @@ namespace WeatherStationWebAPI.Controllers
 
             return weatherObservation;
         }
+        
 
         // PUT: api/WeatherObservations/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
+        /*[HttpPut("{id}")]
         public async Task<IActionResult> PutWeatherObservation(long id, WeatherObservation weatherObservation)
         {
             if (id != weatherObservation.Id)
@@ -96,7 +112,7 @@ namespace WeatherStationWebAPI.Controllers
             }
 
             return NoContent();
-        }
+        }*/
 
         // POST: api/WeatherObservations
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
@@ -115,6 +131,7 @@ namespace WeatherStationWebAPI.Controllers
                     Latitude = dtoWeatherObservation.Latitude,
                     Longitude = dtoWeatherObservation.Longitude
                 }).Entity;
+                await _context.SaveChangesAsync();
             }
 
             var weatherObservation = new WeatherObservation()

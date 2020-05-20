@@ -7,6 +7,10 @@ namespace WeatherStationWebAPI.Models
 {
     public class DtoWeatherObservation
     {
+        public DtoWeatherObservation()
+        {
+        }
+
         public DtoWeatherObservation(WeatherObservation weatherObservation, Place place)
         {
             Date = weatherObservation.Date;
