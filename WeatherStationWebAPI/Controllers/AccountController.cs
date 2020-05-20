@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WeatherStationWebAPI.Data;
+using static BCrypt.Net.BCrypt;
 
 namespace WeatherStationWebAPI.Controllers
 {
@@ -21,6 +23,8 @@ namespace WeatherStationWebAPI.Controllers
         }
 
         // Login og register endpoints below:
+
+        
 
     }
 }
